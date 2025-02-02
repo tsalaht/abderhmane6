@@ -1,13 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  ViewStyle,
-} from 'react-native';
+import { StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle, View } from 'react-native';
 import { ReactNode } from 'react';
 import Colors from '../Colors';
+import { SvgXml } from 'react-native-svg'; // Import SvgXml for SVG icons
+
 interface BasicProps {
   onPress: () => void;
   containerStyle?: ViewStyle;
@@ -15,14 +11,18 @@ interface BasicProps {
   textStyles?: TextStyle;
   disabled?: boolean;
   insetShadowContainerStyle?: ViewStyle;
+  iconXml?: string; // Accept an SVG XML string as a prop for the icon
 }
+
 interface ChildrenProps extends BasicProps {
   children: ReactNode;
 }
+
 interface TextProps extends BasicProps {
   text: string;
 }
-export default function LinearButton2(props: TextProps | ChildrenProps) {
+
+export default function LinearButton(props: TextProps | ChildrenProps) {
   return (
     <TouchableOpacity
       disabled={props.disabled}
@@ -31,15 +31,20 @@ export default function LinearButton2(props: TextProps | ChildrenProps) {
     >
       <LinearGradient
         style={[styles.linear, props.linearStyle]}
-        colors={['#FFFCA8',Colors.PRIMARY_600, '#FFAF36','#F1DC83']}
+        colors={[Colors.PRIMARY_600, '#FFAF36']}
         start={[0, 0]}
         end={[1, 1]}
       >
-        {'children' in props ? (
-          props.children
-        ) : (
-          <Text style={[styles.text, props.textStyles]}>{props.text}</Text>
-        )}
+        <View style={styles.contentWrapper}>
+          {props.iconXml && (
+            <SvgXml xml={props.iconXml} width={18} height={18} style={styles.icon} />
+          )}
+          {'children' in props ? (
+            props.children
+          ) : (
+            <Text style={[styles.text, props.textStyles]}>{props.text}</Text>
+          )}
+        </View>
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -69,5 +74,14 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  contentWrapper: {
+    flexDirection: 'row-reverse', // Align the icon and text in a row
+    alignItems: 'center', // Center the items vertically
+    justifyContent: 'center',
+    gap:6.59
+  },
+  icon: {
+    marginRight: 8, // Space between icon and text
   },
 });

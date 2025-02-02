@@ -181,9 +181,9 @@ export default function Chat() {
             <View style={shadow.imageContainer}>
               <Pressable onPress={openBottomSheet}>
                 <ProfileCard
-                  gradientColors={["#C2E8FD", "#67E0AC", "#138B57", "#C2E8FD"]}
+                  gradientColors={["#F3EBE1", "#CCB28D", "#B08D57", "#F3EBE1"]}
                   profileSvg={svgs[0].profile}
-                  badgeSvg={svgs[0].badge}
+                  badgeSvg={svgs[0].bag3}
                   smallCardSvg={svgs[0].smalCards}
                   name="Saad14"
                   giftCount="152 ألفاً"
@@ -254,18 +254,7 @@ export default function Chat() {
             </View>
           </View>
         </BlurView>
-        {/* <BottomSheet
-          ref={bottomSheetRef}
-          snapPoints={["25%", "50%", "75%"]}
-          index={-1}
-          enablePanDownToClose={true}
-        >
-          <View style={{ padding: 20 }}>
-            <Text style={{ fontFamily: fonts.almaraiRegular, fontSize: 18 }}>
-              Hello, Welcome!
-            </Text>
-          </View>
-        </BottomSheet> */}
+
       </ImageBackground>
     </View>
   );

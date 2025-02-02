@@ -16,12 +16,9 @@ import {
   } from "iconsax-react-native";
   import { SvgXml } from "react-native-svg";
   import { BlurView } from "expo-blur";
-  import Overview from "../Components/Overview";
+  
   import Chat from "../Components/Chat";
-  import Plan from "../Components/Plan";
-  import Adds from "../Components/Adds";
-  import SeeFriends from "../Components/SeeFriends";
-  import Ranks from "../Components/Ranks";
+  
   export default function Friends() {
     const [selectedTab, setSelectedTab] = useState<string>("adds"); 
     const getColoredIcon = (xmlString:any, color:any, isRankIcon = false) => {
@@ -45,15 +42,15 @@ import {
     const renderContent = () => {
       switch (selectedTab) {
         case "adds":
-          return <Adds />;
+          return <Chat />;
         case "chats":
           return <Chat />;
         case "friends":
-          return <SeeFriends />;
+          return <Chat />;
         case "leaders":
-          return <Ranks />;
+          return <Chat />;
         default:
-          return <Overview />;
+          return <Chat />;
       }
     };
     const shadow = StyleSheet.create({

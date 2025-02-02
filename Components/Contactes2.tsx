@@ -1,44 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState,useCallback,useRef } from 'react';
 import { ScrollView, StyleSheet, View, Text, TouchableWithoutFeedback, TouchableOpacity, Dimensions } from 'react-native';
-import { SvgXml } from "react-native-svg";
+import { SvgXml } from 'react-native-svg';
 import { svgs } from '../Views/svg';
 import fonts from '../fonts';
 import Colors from '../Colors';
 
 const { width } = Dimensions.get('window');
 
-const MessageBubble = ({ username, message, isUser, onLongPress }: any) => (
-  <TouchableWithoutFeedback onLongPress={onLongPress}>
-    <View style={[styles.messageContent, isUser && styles.userMessage]}>
-      <SvgXml xml={svgs[0].profile} />
-      <View style={{ flexDirection: 'column' }}>
-        <Text style={styles.username}>{username}</Text>
-        {Array.isArray(message) ? (
-          message.map((text, index) => (
-            <View key={index} style={styles.messageBubble}>
-              <Text style={styles.messageText}>{text}</Text>
+const MessageBubble = ({ username, message, isUser, onLongPress }: any) => {
+    const bottomSheetRef = useRef<any>(null);
+    const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
+    const openBottomSheet = useCallback(() => {
+        setBottomSheetVisible(true);
+        bottomSheetRef.current?.expand();
+      }, []);
+    
+      // Function to close the bottom sheet
+      const closeBottomSheet = useCallback(() => {
+        setBottomSheetVisible(false);
+        bottomSheetRef.current?.close();
+      }, []);
+    if (isUser) {
+      // If the message is from the user, apply custom style for user messages
+      return (
+        <TouchableWithoutFeedback onLongPress={onLongPress}>
+          <View style={styles.userReplyContainer}>
+            <View style={styles.replyBubble}>
+              <Text style={styles.replyText}>{message}</Text>
             </View>
-          ))
-        ) : (
-          <View style={styles.messageBubble}>
-            <Text style={styles.messageText}>{message}</Text>
           </View>
-        )}
-      </View>
-    </View>
-  </TouchableWithoutFeedback>
-);
+        </TouchableWithoutFeedback>
+      );
+    }
+  
+  
+    return (
+      <TouchableWithoutFeedback onLongPress={onLongPress}>
+        <View style={styles.messageContent}>
+          <SvgXml xml={svgs[0].profile} />
+          <View style={{ flexDirection: 'column' }}>
+            <Text style={styles.username}>{username}</Text>
+            {Array.isArray(message) ? (
+              message.map((text, index) => (
+                <View key={index} style={styles.messageBubble}>
+                  <Text style={styles.messageText}>{text}</Text>
+                </View>
+              ))
+            ) : (
+              <View style={styles.messageBubble}>
+                <Text style={styles.messageText}>{message}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
 
-const Chatroom = () => {
+const Contactes = ({ messages }: any) => {
   const [showActions, setShowActions] = useState(false);
   const [actionPosition, setActionPosition] = useState({ top: 0, left: 0 });
-
-  const messages = [
-    { username: 'saad14', message: 'السلام عليكم ورحمة الله وبركاته' },
-    { username: 'saad14', message: 'السلام عليكم ورحمة الله وبركاته' },
-    { username: 'saad14', message: ['السلام عليكم ورحمة الله وبركاته', 'السلام عليكم ورحمة الله وبركاته', 'السلام عليكم ورحمة الله وبركاته'] },
-    { username: 'saad14', message: 'السلام عليكم ورحمة الله وبركاته' },
-  ];
 
   const handleLongPress = (event: any, index: any) => {
     const { pageY, pageX } = event.nativeEvent;
@@ -57,8 +78,7 @@ const Chatroom = () => {
           <TouchableOpacity
             activeOpacity={1} // Prevents the opacity change on tap
             onPress={() => {}} // Prevents the outer TouchableWithoutFeedback from being triggered
-            style={[styles.actionsContainer, { top: actionPosition.top - 50, left: actionPosition.left - 60 }]}
-          >
+            style={[styles.actionsContainer, { top: actionPosition.top - 50, left: actionPosition.left - 60 }]}>
             <View style={styles.actionsWrapper}>
               {['ملف اللاعب', 'حظر واسكات', 'تبليغ'].map((label, index) => (
                 <View key={index} style={styles.actionButton}>
@@ -73,22 +93,24 @@ const Chatroom = () => {
         )}
 
         <ScrollView style={styles.scrollView}>
-          {messages.map((msg, index) => (
-            <MessageBubble
-              key={index}
-              username={msg.username}
-              message={msg.message}
-              isUser={false}
-              onLongPress={(event: any) => handleLongPress(event, index)}
-            />
-          ))}
           <View style={styles.userReplyContainer}>
             <View style={styles.replyBubble}>
               <Text style={styles.replyText}>السلام عليكم ورحمة الله وبركاته</Text>
             </View>
           </View>
+
+          {messages.map((msg: any, index: number) => (
+            <MessageBubble
+              key={index}
+              username={msg.username}
+              message={msg.message}
+              isUser={msg.username === 'You'}
+              onLongPress={(event: any) => handleLongPress(event, index)}
+            />
+          ))}
         </ScrollView>
       </View>
+      
     </TouchableWithoutFeedback>
   );
 };
@@ -131,7 +153,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     alignItems: 'flex-end',
-    marginVertical: 8,
   },
   userMessage: {
     flexDirection: 'row-reverse',
@@ -140,7 +161,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.almaraiRegular,
     fontSize: 12,
     color: 'white',
-    marginTop: 16,
   },
   messageBubble: {
     backgroundColor: '#848A95',
@@ -148,7 +168,6 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 8,
     borderTopStartRadius: 8,
     borderBottomEndRadius: 8,
-    marginTop: 4,
   },
   messageText: {
     fontFamily: fonts.almaraiRegular,
@@ -158,6 +177,7 @@ const styles = StyleSheet.create({
   userReplyContainer: {
     flexDirection: 'row-reverse',
     gap: 8,
+    marginTop: 20,
   },
   replyBubble: {
     backgroundColor: Colors.BACKGROUND_3,
@@ -165,7 +185,6 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 8,
     borderTopStartRadius: 8,
     borderBottomStartRadius: 8,
-    marginVertical: 16,
   },
   replyText: {
     fontFamily: fonts.almaraiRegular,
@@ -174,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Chatroom;
+export default Contactes;

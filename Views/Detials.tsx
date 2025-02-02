@@ -5,50 +5,41 @@ import {
   StyleSheet,
   Pressable,
   Dimensions,
+  TextInput
 } from "react-native";
 import styles from "./Styles/Index";
 import Colors from "../Colors";
 import fonts from "../fonts";
 import React, { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
-import MaskedView from '@react-native-masked-view/masked-view';
 import GradientText from "../Components/GradientText ";
 import {
   ArrowRight2,
   SearchNormal1,
-  Message2,User,Data
 } from "iconsax-react-native";
 import { icons } from "./icons";
 import { SvgXml } from "react-native-svg";
 import { svgs } from "./svg";
-import { useDispatch } from "react-redux";
 import { BlurView } from "expo-blur";
-import Overview from "../Components/Overview";
-import Chat from "../Components/Chat";
-import Plan from "../Components/Plan";
+import NewChat from "../Components/NewChat";
 export default function Detials() {
   const getColoredIcon = (xmlString:any, color:any) => {
     return xmlString
-    // .replace(/fill="[^"]*"/g, `fill="${color}"`)
     .replace(/stroke="[^"]*"/g, `stroke="${color}"`);
   };
   
   const [selectedTab, setSelectedTab] = useState<string>("overview"); 
   const isSelected = (tab:any) => selectedTab === tab;
-  const renderContent = () => {
-    switch (selectedTab) {
-      case "overview":
-        return <Overview />;
-      case "chat":
-        return <Chat />;
-      case "plan":
-        return <Plan />;
-      default:
-        return <Overview />;
-    }
-  };
   const coloredChatIconXml = getColoredIcon(icons[0].chatT, isSelected("chat") ? '#FFFFFF' : Colors.BACKGROUND_3);
-  const coloredPlanIconXml = getColoredIcon(icons[0].plan, isSelected("plan") ? '#FFFFFF' : Colors.BACKGROUND_3);
+  const coloredPlanIconXml = getColoredIcon(svgs[0].leeg, isSelected("plan") ? '#FFFFFF' : Colors.BACKGROUND_3);
+    const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState([{ username: 'saad14', message: 'السلام عليكم ورحمة الله وبركاته' }]);
+    const handleSendMessage = () => {
+      if (message.trim()) {
+        const newMessage = { username: 'You', message };
+        setMessages([ ...messages, newMessage ]);
+        setMessage(""); 
+      }
+    }
   const shadow = StyleSheet.create({
     // inside shadow
     container: {
@@ -162,11 +153,39 @@ export default function Detials() {
           </View>
         </BlurView>
 
-      
-        {renderContent()}
+        <NewChat messages={messages} />
 
         <BlurView intensity={5} tint="dark" style={{ ...shadow.blurContainer2 }}>
           <View style={{ width: "100%", padding: 12 }}>
+              <View
+                          style={{
+                            width: "100%",
+                            paddingHorizontal: 12,
+                            paddingVertical: 8,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            backgroundColor: Colors.BACKGROUND_4,
+                            borderRadius: 28,
+                            marginBottom:16
+                          }}
+                        >
+                          <Pressable  onPress={handleSendMessage}>
+                            <SvgXml xml={svgs[0].send} />
+                          </Pressable>
+                          <TextInput
+                            placeholder="رسالتك..."
+                            style={{
+                              flex: 1,
+                              fontFamily: fonts.almaraiRegular,
+                              fontSize: 12,
+                              color: Colors.DEFAULT_WHITE,
+                            }}
+                            placeholderTextColor="#9C9FA6"
+                            value={message}
+                            onChangeText={setMessage}
+                     
+                          />
+                        </View>
             <View style={{
               backgroundColor: Colors.BACKGROUND_5,
               padding: 8,
@@ -192,7 +211,7 @@ export default function Detials() {
                     fontFamily: fonts.almaraiRegular,
                     marginTop: 4
                   }}>
-                    المخطط
+                الدوريات
                   </Text>
                 </View>
               </Pressable>
